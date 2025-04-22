@@ -24,9 +24,9 @@ dependencies {
     testImplementation(libs.bundles.lint.tests)
     implementation(kotlin("stdlib-jdk8"))
 }
-repositories {
+/*repositories {
     mavenCentral()
-}
+}*/
 kotlin {
     jvmToolchain(17)
 }
