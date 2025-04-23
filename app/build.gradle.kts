@@ -51,7 +51,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(project(":checks"))
-    lintPublish(project(":checks"))
+    lintChecks(project(":checks"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

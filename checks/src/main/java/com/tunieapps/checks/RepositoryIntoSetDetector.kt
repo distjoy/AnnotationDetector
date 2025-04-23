@@ -10,6 +10,7 @@ import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
 import org.jetbrains.uast.UAnnotation
+import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 
 
@@ -27,22 +28,27 @@ class RepositoryIntoSetDetector : Detector(), SourceCodeScanner
             IMPLEMENTATION)
     }
 
+    override fun getApplicableUastTypes(): List<Class<out UElement?>> {
+        return listOf(UAnnotation::class.java)
+    }
+
 
     override fun createUastHandler(context: JavaContext): UElementHandler {
         return object  : UElementHandler() {
-            override fun visitAnnotation(annotation: UAnnotation) {
-                val type = annotation.qualifiedName
-                if (type == null || type.startsWith("dagger.multibindings.")) {
+            override fun visitAnnotation(node: UAnnotation) {
+                val type = node.qualifiedName
+                if (type == null || !type.startsWith("dagger.")) {
                     return
                 }
-                if (type == "javax.inject.Provides"){ //need to also check if return type is a sepcific class
-                    annotation.uastParent?.let {
-                        (it as UMethod).apply {
-                            if (! it.hasAnnotation("dagger.multibindings.IntoSet")){
+                if (type == "dagger.Provides"){
+                    node.uastParent?.let {
+                       (it as UMethod).apply {
+                           if (! it.hasAnnotation("dagger.multibindings.IntoSet") &&
+                               it.returnTypeReference?.getQualifiedName() == "di.Test"){
                                 context.report(
                                     issue = ANNOTATION_USAGE,
-                                    annotation,
-                                    context.getLocation(annotation),
+                                    node,
+                                    context.getLocation(node),
                                     ""
                                 )
                             }

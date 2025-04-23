@@ -10,6 +10,8 @@ import dagger.hilt.components.SingletonComponent
 class TestModule  {
 
     @Provides
-    fun provideTestClass() = Test()
+    fun provideTestClass() : Test = Test()
 
+    @Provides
+    fun provideValidClass() : Valid = Valid()
 }
