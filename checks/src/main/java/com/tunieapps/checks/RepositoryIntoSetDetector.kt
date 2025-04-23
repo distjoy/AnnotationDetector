@@ -9,7 +9,6 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
-import com.intellij.psi.PsiType
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UMethod
 
@@ -18,7 +17,7 @@ class RepositoryIntoSetDetector : Detector(), SourceCodeScanner
 {
     companion object Issues {
         private val IMPLEMENTATION = Implementation(RepositoryIntoSetDetector::class.java, Scope.JAVA_FILE_SCOPE)
-        private val ANNOTATION_USAGE =   Issue.create(
+        val ANNOTATION_USAGE =   Issue.create(
             "IncorrectProvidesAnnotationUsage",
             "Incorrect provides annotation usage",
             "",
@@ -33,13 +32,13 @@ class RepositoryIntoSetDetector : Detector(), SourceCodeScanner
         return object  : UElementHandler() {
             override fun visitAnnotation(annotation: UAnnotation) {
                 val type = annotation.qualifiedName
-                if (type == null || type.startsWith("javax.inject.")) {
+                if (type == null || type.startsWith("dagger.multibindings.")) {
                     return
                 }
                 if (type == "javax.inject.Provides"){ //need to also check if return type is a sepcific class
                     annotation.uastParent?.let {
                         (it as UMethod).apply {
-                            if ( it.hasAnnotation("dagger.multibindings.IntoSet")){
+                            if (! it.hasAnnotation("dagger.multibindings.IntoSet")){
                                 context.report(
                                     issue = ANNOTATION_USAGE,
                                     annotation,

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -33,6 +35,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    lint {
+        checkDependencies = true
+        sarifOutput = file("../lint-results.sarif")
+        textReport = true
+    }
 }
 
 dependencies {
@@ -43,4 +50,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(project(":checks"))
+    lintPublish(project(":checks"))
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }
